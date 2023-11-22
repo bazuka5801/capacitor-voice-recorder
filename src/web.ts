@@ -1,9 +1,18 @@
 import {WebPlugin} from '@capacitor/core';
 
 import {VoiceRecorderImpl} from './VoiceRecorderImpl';
-import type {CurrentRecordingStatus, GenericResponse, RecordingData, VoiceRecorderPlugin} from './definitions';
+import type {CurrentRecordingStatus, GenericResponse, PeaksResponse, RecordingData, VoiceRecorderPlugin} from './definitions';
+
 
 export class VoiceRecorderWeb extends WebPlugin implements VoiceRecorderPlugin {
+    getPeaks(): Promise<PeaksResponse> {
+     return new Promise<PeaksResponse>(resolve => {
+        resolve({
+            peakPower: 0,
+            averagePower: 0
+        })
+     })
+    }
 
     private voiceRecorderInstance = new VoiceRecorderImpl();
 

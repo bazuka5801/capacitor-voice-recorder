@@ -13,14 +13,14 @@ class CustomMediaRecorder {
         AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
         AVSampleRateKey: 44100,
         AVNumberOfChannelsKey: 1,
-        AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+        AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue,
     ]
     
     private func getDirectoryToSaveAudioFile() -> URL {
         return URL(fileURLWithPath: NSTemporaryDirectory(), isDirectory: true)
     }
     
-    public func startRecording() -> Bool {
+    public func startRecording(withMetrics: Bool) -> Bool {
         do {
             recordingSession = AVAudioSession.sharedInstance()
             originalRecordingSessionCategory = recordingSession.category
@@ -28,12 +28,19 @@ class CustomMediaRecorder {
             try recordingSession.setActive(true)
             audioFilePath = getDirectoryToSaveAudioFile().appendingPathComponent("\(UUID().uuidString).aac")
             audioRecorder = try AVAudioRecorder(url: audioFilePath, settings: settings)
+            audioRecorder.isMeteringEnabled = withMetrics
             audioRecorder.record()
             status = CurrentRecordingStatus.RECORDING
             return true
         } catch {
             return false
         }
+    }
+    
+    public func getPeaks() -> (averagePower: Float, peakPower: Float) {
+        audioRecorder.updateMeters()
+        
+        return (audioRecorder.averagePower(forChannel: 0), audioRecorder.peakPower(forChannel: 0))
     }
     
     public func stopRecording() {

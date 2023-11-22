@@ -3,6 +3,7 @@ package com.tchvu3.capacitorvoicerecorder;
 import android.content.Context;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.os.Handler;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +14,8 @@ public class CustomMediaRecorder {
     private MediaRecorder mediaRecorder;
     private File outputFile;
     private CurrentRecordingStatus currentRecordingStatus = CurrentRecordingStatus.NONE;
+    private Handler handler;
+    private Double peakLevel = 0.0;
 
     public CustomMediaRecorder(Context context) throws IOException {
         this.context = context;
@@ -37,9 +40,13 @@ public class CustomMediaRecorder {
         mediaRecorder.setOutputFile(outputFile.getAbsolutePath());
     }
 
-    public void startRecording() {
+    public void startRecording(boolean withMetrics) {
         mediaRecorder.start();
         currentRecordingStatus = CurrentRecordingStatus.RECORDING;
+        if (withMetrics) {
+            handler = new Handler();
+            handler.post(updateMeter);
+        }
     }
 
     public void stopRecording() {
@@ -106,5 +113,24 @@ public class CustomMediaRecorder {
                 tempMediaRecorder.deleteOutputFile();
         }
     }
+
+    public double getPeakLevel() {
+        return peakLevel;
+    }
+
+
+    private Runnable updateMeter = new Runnable() {
+        @Override
+        public void run() {
+            if (currentRecordingStatus == CurrentRecordingStatus.RECORDING) {
+                int amplitude = mediaRecorder.getMaxAmplitude();
+                double dBFS = 20 * Math.log10(amplitude / 32767.0);
+                // Use the dBFS value as needed
+                System.out.println("Peak dBFS: " + dBFS);
+                peakLevel = dBFS;
+                handler.postDelayed(this, 100); // Update every 100 milliseconds
+            }
+        }
+    };
 
 }

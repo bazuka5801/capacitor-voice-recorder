@@ -16,6 +16,15 @@ export interface CurrentRecordingStatus {
   status: 'RECORDING' | 'PAUSED' | 'NONE';
 }
 
+export interface VoiceStartRecordingOptions {
+  withMetrics?: boolean
+}
+
+export interface PeaksResponse {
+  peakPower: number
+  averagePower?: number
+}
+
 export interface VoiceRecorderPlugin {
   canDeviceVoiceRecord (): Promise<GenericResponse>;
 
@@ -23,7 +32,7 @@ export interface VoiceRecorderPlugin {
 
   hasAudioRecordingPermission (): Promise<GenericResponse>;
 
-  startRecording (): Promise<GenericResponse>;
+  startRecording (options: VoiceStartRecordingOptions): Promise<GenericResponse>;
 
   stopRecording (): Promise<RecordingData>;
 
@@ -32,5 +41,7 @@ export interface VoiceRecorderPlugin {
   resumeRecording (): Promise<GenericResponse>;
 
   getCurrentStatus (): Promise<CurrentRecordingStatus>;
+
+  getPeaks (): Promise<PeaksResponse>;
 
 }

@@ -43,7 +43,9 @@ public class VoiceRecorder: CAPPlugin {
             return
         }
         
-        let successfullyStartedRecording = customMediaRecorder!.startRecording()
+        let withMetrics = call.getBool("withMetrics", false)
+        
+        let successfullyStartedRecording = customMediaRecorder!.startRecording(withMetrics: withMetrics)
         if successfullyStartedRecording == false {
             call.reject(Messages.CANNOT_RECORD_ON_THIS_PHONE)
         } else {
@@ -125,6 +127,19 @@ public class VoiceRecorder: CAPPlugin {
             return -1
         }
         return Int(CMTimeGetSeconds(AVURLAsset(url: filePath!).duration) * 1000)
+    }
+    
+    
+    @objc func getPeaks(_ call: CAPPluginCall) {
+        if(customMediaRecorder == nil) {
+            call.reject(Messages.RECORDING_HAS_NOT_STARTED)
+        } else {
+            let peaks = customMediaRecorder?.getPeaks()
+            call.resolve([
+                "averagePower": peaks?.averagePower ?? 0,
+                "peakPower": peaks?.peakPower ?? 0
+            ])
+        }
     }
     
 }

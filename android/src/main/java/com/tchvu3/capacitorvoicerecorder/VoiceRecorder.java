@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.util.Base64;
 
+import com.getcapacitor.JSObject;
 import com.getcapacitor.PermissionState;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
@@ -78,9 +79,11 @@ public class VoiceRecorder extends Plugin {
             return;
         }
 
+        Boolean withMetrics = call.getBoolean("withMetrics", false)
+
         try {
             mediaRecorder = new CustomMediaRecorder(getContext());
-            mediaRecorder.startRecording();
+            mediaRecorder.startRecording(withMetrics);
             call.resolve(ResponseGenerator.successResponse());
         } catch (Exception exp) {
             call.reject(Messages.FAILED_TO_RECORD, exp);
@@ -147,6 +150,17 @@ public class VoiceRecorder extends Plugin {
             call.resolve(ResponseGenerator.statusResponse(CurrentRecordingStatus.NONE));
         } else {
             call.resolve(ResponseGenerator.statusResponse(mediaRecorder.getCurrentStatus()));
+        }
+    }
+
+    @PluginMethod()
+    public void getPeaks(PluginCall call) {
+        if (mediaRecorder == null) {
+            call.resolve(ResponseGenerator.statusResponse(CurrentRecordingStatus.NONE));
+        } else {
+            JSObject success = new JSObject();
+            success.put("peakPower", mediaRecorder.getPeakLevel());
+            call.resolve(success);
         }
     }
 
