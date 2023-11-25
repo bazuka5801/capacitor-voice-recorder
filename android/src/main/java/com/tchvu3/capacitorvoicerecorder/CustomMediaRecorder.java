@@ -99,21 +99,6 @@ public class CustomMediaRecorder {
         return true;
     }
 
-    private static boolean canPhoneCreateMediaRecorderWhileHavingPermission(Context context) {
-        CustomMediaRecorder tempMediaRecorder = null;
-        try {
-            tempMediaRecorder = new CustomMediaRecorder(context);
-            tempMediaRecorder.startRecording();
-            tempMediaRecorder.stopRecording();
-            return true;
-        } catch (Exception exp) {
-            return exp.getMessage().startsWith("stop failed");
-        } finally {
-            if (tempMediaRecorder != null)
-                tempMediaRecorder.deleteOutputFile();
-        }
-    }
-
     public double getPeakLevel() {
         return peakLevel;
     }

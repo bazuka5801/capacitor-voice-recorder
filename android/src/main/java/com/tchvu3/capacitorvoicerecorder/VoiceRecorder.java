@@ -79,7 +79,7 @@ public class VoiceRecorder extends Plugin {
             return;
         }
 
-        Boolean withMetrics = call.getBoolean("withMetrics", false)
+        Boolean withMetrics = call.getBoolean("withMetrics", false);
 
         try {
             mediaRecorder = new CustomMediaRecorder(getContext());
@@ -159,7 +159,8 @@ public class VoiceRecorder extends Plugin {
             call.resolve(ResponseGenerator.statusResponse(CurrentRecordingStatus.NONE));
         } else {
             JSObject success = new JSObject();
-            success.put("peakPower", mediaRecorder.getPeakLevel());
+            success.put("averagePower", mediaRecorder.getPeakLevel());
+            success.put("peakPower", -160);
             call.resolve(success);
         }
     }

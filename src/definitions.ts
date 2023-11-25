@@ -21,8 +21,8 @@ export interface VoiceStartRecordingOptions {
 }
 
 export interface PeaksResponse {
-  peakPower: number
-  averagePower?: number
+  peakPower?: number
+  averagePower: number
 }
 
 export interface VoiceRecorderPlugin {
